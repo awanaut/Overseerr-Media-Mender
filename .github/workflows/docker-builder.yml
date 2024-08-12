@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: overseerr-media-mender
   
 jobs:
   build:
@@ -16,14 +16,15 @@ jobs:
 
     - name: Set up Packer
       uses: hashicorp/setup-packer@main
+      id: setup
       with:
-        version: '1.8.0' 
+        version: 'latest' 
 
     - name: Initialize Packer
-      run: packer init .
+      run: packer init ./image.pkr.hcl
 
     - name: Build Docker image with Packer
-      run: packer build packer.pkr.hcl
+      run: packer build ./packer.pkr.hcl
 
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v1
