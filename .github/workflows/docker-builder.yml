@@ -9,31 +9,27 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
     - name: Set up Packer
       uses: hashicorp/setup-packer@main
       with:
-        version: '1.7.4'
+        version: '1.8.0'  # Using a more recent version
+
+    - name: Initialize Packer
+      run: packer init .
 
     - name: Build Docker image with Packer
-      run: |
-        cd packer
-        packer init .
-        packer build -var "github_username=${{ github.repository_owner }}" -var "image_version=${GITHUB_SHA::8}" .
+      run: packer build packer.pkr.hcl
 
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
-        username: ${{ github.repository_owner }}
+        username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push Docker image
-      run: |
-        docker push ghcr.io/${{ github.repository_owner }}/overseerr-media-mender:latest
-        docker push ghcr.io/${{ github.repository_owner }}/overseerr-media-mender:${GITHUB_SHA::8}
+      run: docker push ghcr.io/awanaut/overseerr-media-mender:latest
 
