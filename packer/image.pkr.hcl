@@ -21,7 +21,8 @@ source "docker" "python" {
   changes = [
     "WORKDIR /app",
     "ENV RUN_INTERVAL=3600",
-    "CMD [\"python\", \"omm.py\"]"
+    "ENV PYTHONUNBUFFERED=1",
+    "CMD [\"python\", \"-u\", \"omm.py\"]"
   ]
 }
 

@@ -6,6 +6,9 @@ import sys
 from dotenv import load_dotenv
 from colorama import init, Fore, Back, Style
 
+sys.stdout.reconfigure(line_buffering=True)
+sys.stderr.reconfigure(line_buffering=True)
+
 init(autoreset=True)
 
 load_dotenv()
