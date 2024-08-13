@@ -195,7 +195,7 @@ def main():
             print_success(f"Updated Overseerr issues to resolved.")
         
 
-def run_periodically(interval=RUN_INTERVAL):
+def run_periodically(interval=INTERVAL):
     while True:
         print(f"\n{Fore.CYAN}{'=' * 50}")
         print(f"{Fore.CYAN}||{' ' * 46}||")
@@ -217,5 +217,5 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     
-    interval = int(os.getenv('RUN_INTERVAL', 3600))  # Allow interval to be set via environment variable
+    interval = int(os.getenv('INTERVAL', 3600))  # Allow interval to be set via environment variable
     run_periodically(interval)
