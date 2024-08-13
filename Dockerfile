@@ -9,5 +9,6 @@ COPY src/ .
 
 ENV RUN_INTERVAL=3600
 ENV PYTHONUNBUFFERED=1
+ENV FORCE_COLOR=1
 
 CMD ["python", "-u", "omm.py"]

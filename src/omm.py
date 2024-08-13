@@ -12,7 +12,7 @@ import requests
 from dotenv import load_dotenv
 from colorama import init, Fore, Back, Style
 
-init(autoreset=True)
+init(autoreset=True, strip=False, convert=True)
 
 load_dotenv()
 
