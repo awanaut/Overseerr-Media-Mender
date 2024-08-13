@@ -22,7 +22,7 @@ RADARR_URL = os.getenv('RADARR_URL')
 RADARR_API_KEY = os.getenv('RADARR_API_KEY')
 SONARR_URL = os.getenv('SONARR_URL')
 SONARR_API_KEY = os.getenv('SONARR_API_KEY')
-RUN_INTERVAL = int(os.getenv('RUN_INTERVAL', 3600))
+INTERVAL = int(os.getenv('INTERVAL', 3600))
 
 def print_header(text):
     print(f"\n{Fore.CYAN}{Style.BRIGHT}{text}")
