@@ -29,7 +29,7 @@ build {
   }
 
   provisioner "file" {
-    source      = "requirements.txt"
+    source      = "src/requirements.txt"
     destination = "/app/requirements.txt"
   }
 
