@@ -13,12 +13,21 @@ jobs:
     runs-on: ubuntu-latest
     name: Build Image
     steps:
+    - uses: actions/checkout@v2
     - name: Set up Packer
       uses: hashicorp/setup-packer@main
       with:
         version: '1.8.0'
-    - name: List repository contents
-      run: ls -R
+    - name: Debug repository contents
+      run: |
+        echo "Current directory:"
+        pwd
+        echo "Directory contents:"
+        ls -la
+        echo "All files (including hidden):"
+        find . -maxdepth 3 -type f
+        echo "Git status:"
+        git status
     - name: Initialize Packer
       run: packer init ./packer/image.pkr.hcl
 
