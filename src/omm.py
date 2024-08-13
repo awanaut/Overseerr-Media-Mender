@@ -119,7 +119,6 @@ def update_overseerr_issue_status(issue_id, status):
     headers = {"X-Api-Key": OVERSEERR_API_KEY}
     response = requests.post(url, headers=headers)
     response.raise_for_status()
-    print(f"Updated Overseerr issue to status: {status}")
     
 def print_no_issues_message():
     print(f"\n{Fore.GREEN}{'=' * 50}")
