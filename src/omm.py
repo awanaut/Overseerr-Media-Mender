@@ -206,8 +206,7 @@ def run_periodically(interval=RUN_INTERVAL):
         main()
         
         next_run = datetime.now() + timedelta(seconds=interval)
-        print(f"\n{Fore.CYAN}Next run scheduled for: {next_run.strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"{Fore.CYAN}Sleeping for {interval} seconds...{Style.RESET_ALL}")
+        print(f"\n{Fore.CYAN}Next run in {interval} seconds...")
         time.sleep(interval)
 
 def signal_handler(sig, frame):
