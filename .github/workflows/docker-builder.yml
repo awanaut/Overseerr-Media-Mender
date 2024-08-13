@@ -17,7 +17,8 @@ jobs:
       uses: hashicorp/setup-packer@main
       with:
         version: '1.8.0'
-
+    - name: List repository contents
+      run: ls -R
     - name: Initialize Packer
       run: packer init ./packer/image.pkr.hcl
 
