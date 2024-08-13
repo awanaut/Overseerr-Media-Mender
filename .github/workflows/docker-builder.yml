@@ -2,7 +2,13 @@ name: Build and Push Docker Image
 
 on:
   push:
+    branches:
+      - 'main'
+      - 'dev'
   pull_request:
+    branches:
+      - 'main'
+      - 'dev'
 
 env:
   REGISTRY: ghcr.io
@@ -57,15 +63,30 @@ jobs:
       run: |
         echo "::set-output name=release_tag::$(date +'%Y.%m.%d_%H-%M')"
     
+    - name: Generate release info
+      id: release_info
+      run: |
+        BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr '/' '-')
+        DATE=$(date +'%Y.%m.%d')
+        SHORT_SHA=$(git rev-parse --short HEAD)
+        echo "::set-output name=branch::$BRANCH_NAME"
+        echo "::set-output name=date::$DATE"
+        echo "::set-output name=sha::$SHORT_SHA"
+
     - name: Create GitHub Release
+      if: github.event_name == 'push' && github.ref != 'refs/heads/main'
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.tag.outputs.release_tag }}
-        release_name: Release ${{ steps.tag.outputs.release_tag }}
+        tag_name: ${{ steps.release_info.outputs.branch }}-${{ steps.release_info.outputs.date }}-${{ steps.release_info.outputs.sha }}
+        release_name: ${{ steps.release_info.outputs.branch }} - ${{ steps.release_info.outputs.date }} (${{ steps.release_info.outputs.sha }})
         body: |
+          Branch: ${{ steps.release_info.outputs.branch }}
+          Date: ${{ steps.release_info.outputs.date }}
+          Commit: ${{ steps.release_info.outputs.sha }}
+          
           Docker image published to GitHub Container Registry:
-          ${{ env.REGISTRY }}/${{ env.REPO }}:${{ github.sha }}
+          ${{ env.REGISTRY }}/${{ env.REPO }}:${{ steps.release_info.outputs.sha }}
         draft: false
         prerelease: false
