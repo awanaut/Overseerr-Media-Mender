@@ -13,10 +13,17 @@ jobs:
     runs-on: ubuntu-latest
     name: Build Image
     steps:
-    - name: checkout
-      uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Set up Packer
+      uses: hashicorp/setup-packer@main
+      with:
+        version: '1.8.0'
+
+    - name: Initialize Packer
+      run: packer init ./image.pkr.hcl
+
+    - name: Build Docker image with Packer
+      run: packer build ./image.pkr.hcl
+
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v1
       with:
@@ -27,15 +34,19 @@ jobs:
     - name: Push Docker image
       run: docker push ghcr.io/awanaut/overseerr-media-mender:latest
 
-    # - name: Create GitHub Release
-    #   uses: actions/create-release@v1
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #   with:
-    #     tag_name: ${{ github.ref }}
-    #     release_name: Release ${{ github.ref }}
-    #     body: |
-    #       Docker image published to GitHub Container Registry:
-    #       ${{ steps.meta.outputs.tags }}
-    #     draft: false
-    #     prerelease: false
+    - name: Generate release tag
+      id: tag
+      run: |
+        echo "::set-output name=release_tag::$(date +'%Y.%m.%d_%H-%M')"
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          Docker image published to GitHub Container Registry:
+          ${{ steps.meta.outputs.tags }}
+        draft: false
+        prerelease: false
