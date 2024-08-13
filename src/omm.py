@@ -1,5 +1,8 @@
 import requests
 import os
+import time
+import signal
+import sys
 from dotenv import load_dotenv
 from colorama import init, Fore, Back, Style
 
@@ -171,6 +174,22 @@ def main():
         
         update_overseerr_issue_status(issue['id'], 'resolved')
         print_success(f"Updated Overseerr issues to resolved.")
+        
+
+def run_periodically(interval=3600):  # Run every hour by default
+    while True:
+        print(f"{Fore.CYAN}Running Overseerr Media Mender...{Style.RESET_ALL}")
+        main()
+        print(f"{Fore.CYAN}Sleeping for {interval} seconds...{Style.RESET_ALL}")
+        time.sleep(interval)
+
+def signal_handler(sig, frame):
+    print(f"{Fore.YELLOW}Received shutdown signal. Exiting...{Style.RESET_ALL}")
+    sys.exit(0)
 
 if __name__ == "__main__":
-    main()
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    
+    interval = int(os.getenv('RUN_INTERVAL', 3600))  # Allow interval to be set via environment variable
+    run_periodically(interval)

@@ -7,4 +7,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/ .
 
+ENV RUN_INTERVAL=3600
+
 CMD ["python", "omm.py"]

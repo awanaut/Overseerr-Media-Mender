@@ -20,6 +20,7 @@ source "docker" "python" {
   commit = true
   changes = [
     "WORKDIR /app",
+    "ENV RUN_INTERVAL=3600",
     "CMD [\"python\", \"omm.py\"]"
   ]
 }
