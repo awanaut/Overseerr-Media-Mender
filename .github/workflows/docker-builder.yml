@@ -14,48 +14,49 @@ jobs:
     name: Build Image
     steps:
     - uses: actions/checkout@v2
-
+    
     - name: Set up Packer
       uses: hashicorp/setup-packer@main
       with:
-        version: '1.11.0'
-
+        version: '1.8.0'
+    
     - name: Initialize Packer
       run: packer init ./packer/image.pkr.hcl
 
     - name: Build Docker image with Packer
       run: |
-        packer build -debug ./packer/image.pkr.hcl
-        docker tag overseerr-media-mender:latest ghcr.io/awanaut/overseerr-media-mender:latest
-        docker images
-
-    - name: Tag Docker image
-      run: |
-        IMAGE_ID=$(docker images --format "{{.ID}}" | head -n 1)
-        if [ -z "$IMAGE_ID" ]; then
-          echo "No Docker image found"
-          exit 1
-        fi
-        echo "Found image ID: $IMAGE_ID"
-        docker tag $IMAGE_ID ghcr.io/awanaut/overseerr-media-mender:latest
-        echo "Tagged image. Listing images:"
+        packer build ./packer/image.pkr.hcl
+        echo "Packer build completed. Listing images:"
         docker images
 
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v1
       with:
-        registry: ghcr.io
+        registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Push Docker image
-      run: docker push ghcr.io/awanaut/overseerr-media-mender:latest
+      run: |
+        IMAGE_ID=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        # Change all uppercase to lowercase
+        IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+        # Strip git ref prefix from version
+        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+        # Strip "v" prefix from tag name
+        [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+        # Use Docker `latest` tag convention
+        [ "$VERSION" == "main" ] && VERSION=latest
+        echo IMAGE_ID=$IMAGE_ID
+        echo VERSION=$VERSION
+        docker tag ghcr.io/awanaut/overseerr-media-mender:latest $IMAGE_ID:$VERSION
+        docker push $IMAGE_ID:$VERSION
 
     - name: Generate release tag
       id: tag
       run: |
         echo "::set-output name=release_tag::$(date +'%Y.%m.%d_%H-%M')"
-
+    
     - name: Create GitHub Release
       uses: actions/create-release@v1
       env:
@@ -65,6 +66,6 @@ jobs:
         release_name: Release ${{ steps.tag.outputs.release_tag }}
         body: |
           Docker image published to GitHub Container Registry:
-          ghcr.io/awanaut/overseerr-media-mender:latest
+          ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         draft: false
         prerelease: false
