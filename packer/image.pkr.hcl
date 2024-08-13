@@ -38,7 +38,7 @@ build {
   }
 
   post-processor "docker-tag" {
-    repository = "ghcr.io/yourusername/overseerr-media-mender"
+    repository = "ghcr.io/awanaut/overseerr-media-mender"
     tags       = ["latest"]
   }
 }

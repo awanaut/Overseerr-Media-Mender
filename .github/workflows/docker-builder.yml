@@ -32,7 +32,9 @@ jobs:
       run: packer init ./packer/image.pkr.hcl
 
     - name: Build Docker image with Packer
-      run: packer build ./packer/image.pkr.hcl
+      run: |
+        packer build ./packer/image.pkr.hcl
+        docker tag overseerr-media-mender:latest ghcr.io/awanaut/overseerr-media-mender:latest
 
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v1
@@ -48,15 +50,16 @@ jobs:
       id: tag
       run: |
         echo "::set-output name=release_tag::$(date +'%Y.%m.%d_%H-%M')"
+
     - name: Create GitHub Release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ steps.tag.outputs.release_tag }}
+        release_name: Release ${{ steps.tag.outputs.release_tag }}
         body: |
           Docker image published to GitHub Container Registry:
-          ${{ steps.meta.outputs.tags }}
+          ghcr.io/awanaut/overseerr-media-mender:latest
         draft: false
         prerelease: false
