@@ -1,6 +1,7 @@
 import sys
 import os
 import time
+import signal
 from datetime import datetime, timedelta
 
 # Force unbuffered output
