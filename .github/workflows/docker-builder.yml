@@ -19,10 +19,10 @@ jobs:
         version: '1.8.0'
 
     - name: Initialize Packer
-      run: packer init ./image.pkr.hcl
+      run: packer init ./packer/image.pkr.hcl
 
     - name: Build Docker image with Packer
-      run: packer build ./image.pkr.hcl
+      run: packer build ./packer/image.pkr.hcl
 
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v1
