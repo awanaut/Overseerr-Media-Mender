@@ -11,8 +11,6 @@ source "docker" "python" {
   commit = true
   changes = [
     "WORKDIR /app",
-    "COPY . /app",
-    "RUN pip install --no-cache-dir -r requirements.txt",
     "CMD [\"python\", \"omm.py\"]"
   ]
 }
@@ -33,8 +31,14 @@ build {
     destination = "/app/requirements.txt"
   }
 
+  provisioner "shell" {
+    inline = [
+      "pip install --no-cache-dir -r /app/requirements.txt"
+    ]
+  }
+
   post-processor "docker-tag" {
-    repository = "ghcr.io/awanaut/overseerr-media-mender"
+    repository = "ghcr.io/yourusername/overseerr-media-mender"
     tags       = ["latest"]
   }
 }
