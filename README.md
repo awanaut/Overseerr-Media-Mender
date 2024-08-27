@@ -9,6 +9,9 @@ Overseerr Media Mender is a python script designed to manage and resolve issues 
 - Triggers a search 
 - Resolves the issue in Overseerr
 
+## Limitation
+Sonarr's API does not have an easy way to add a release to a block list unless it's currently stuck in the queue. You may run the risk of Sonarr regrabbing the same release. This can be a problem if it's a fully borked release instead of a half imported media item.
+
 ## Prerequisites
 
 - Docker 
@@ -16,7 +19,6 @@ Overseerr Media Mender is a python script designed to manage and resolve issues 
 - Overseerr 
 - Radarr 
 - Sonarr
-
 
 ## Docker Usage
 I personally run it as a sidecar to Overseerr in Nomad, however you can run this as a standalone container if you'd like. 
