@@ -6,14 +6,23 @@ packer {
     }
   }
 }
+variable "registry" {
+  type    = string
+  default = "ghcr.io"
+}
+
+variable "image_name" {
+  type    = string
+  default = "awanaut/overseerr-media-mender"
+}
 source "docker" "python" {
   image  = "python:3.9-slim"
   commit = true
   changes = [
     "WORKDIR /app",
-    "COPY . /app",
-    "RUN pip install --no-cache-dir -r requirements.txt",
-    "CMD [\"python\", \"omm.py\"]"
+    "ENV INTERVAL=3600",
+    "ENV PYTHONUNBUFFERED=1",
+    "CMD [\"python\", \"-u\", \"omm.py\"]"
   ]
 }
 
@@ -29,12 +38,18 @@ build {
   }
 
   provisioner "file" {
-    source      = "requirements.txt"
+    source      = "src/requirements.txt"
     destination = "/app/requirements.txt"
   }
 
+  provisioner "shell" {
+    inline = [
+      "pip install --no-cache-dir -r /app/requirements.txt"
+    ]
+  }
+
   post-processor "docker-tag" {
-    repository = "ghcr.io/awanaut/overseerr-media-mender"
+    repository = "${var.registry}/${var.image_name}"
     tags       = ["latest"]
   }
 }

@@ -7,4 +7,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/ .
 
-CMD ["python", "omm.py"]
+ENV INTERVAL=3600
+ENV PYTHONUNBUFFERED=1
+
+CMD ["python", "-u", "omm.py"]
