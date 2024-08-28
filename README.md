@@ -12,6 +12,8 @@ Overseerr Media Mender is a python script designed to manage and resolve issues 
 ## Limitation
 Sonarr's API does not have an easy way to add a release to a block list unless it's currently stuck in the queue. You may run the risk of Sonarr regrabbing the same release. This can be a problem if it's a fully borked release instead of a half imported media item.
 
+I have not tested this on Jellyseer, but I imagine since the API's are the same, it should work.
+
 ## Prerequisites
 
 - Docker 
@@ -27,7 +29,7 @@ I personally run it as a sidecar to Overseerr in Nomad, however you can run this
 2. docker run --env-file .env ghcr.io/awanaut/overseerr-media-mender:latest
 
 ## Nomad Usage
-Add the following your Overseerr job file:
+Use the example Nomad job file which includes [Traefik](https://doc.traefik.io/traefik/routing/providers/nomad/) (just delete the Traefik tags if you don't want it) or add the following task to your Overseerr job file:
 
 ```less secure option
 task "omm" {
@@ -43,7 +45,7 @@ task "omm" {
 
       }
       config {
-        image = "ghcr.io/awanaut/overseerr-media-mender"
+        image = "ghcr.io/awanaut/overseerr-media-mender:latest"
       }
       lifecycle {
         hook    = "poststart"
@@ -58,10 +60,6 @@ If you want to store your API key's as an encrypted variable, follow this tutori
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-[MIT License](LICENSE)
 
 ## Disclaimer
 
